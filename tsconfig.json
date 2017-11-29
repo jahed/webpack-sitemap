@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "dist",
+    "lib": [
+      "es6",
+      "dom"
+    ],
+    "strictNullChecks": false,
+    "pretty": true,
+    "rootDir": "src",
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationDir": "dist",
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "exclude": [
+    "node_modules",
+    "node_modules/**",
+    "dist",
+    "src/**/*.test.ts"
+  ],
+  "include": [
+    "src"
+  ]
+}

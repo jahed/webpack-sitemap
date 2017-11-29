@@ -1,0 +1,1 @@
+export { SitemapPlugin } from './SitemapPlugin'
