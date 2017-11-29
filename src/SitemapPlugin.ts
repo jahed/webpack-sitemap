@@ -90,7 +90,7 @@ function getTemplate<T>(filename: string): HandlebarsTemplateDelegate<T> {
     return compileTemplate(readFileSync(resolvePath(__dirname, '../templates', filename), 'utf-8'))
 }
 
-class SitemapPlugin extends Plugin {
+class SitemapPlugin implements Plugin {
     private _options: PluginOptions
     private _templates: {
         sitemap: HandlebarsTemplateDelegate<SitemapIndex>,
@@ -99,8 +99,6 @@ class SitemapPlugin extends Plugin {
     private _log: IDebugger
 
     constructor(userOptions: PluginOptions) {
-        super()
-
         const defaultOptions: PluginOptions = {
             basename: undefined,
             sitemapindex: {},
