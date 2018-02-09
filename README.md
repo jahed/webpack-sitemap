@@ -1,5 +1,7 @@
 # webpack-sitemap
 
+[![Patreon](https://img.shields.io/badge/patreon-donate-f96854.svg)](https://www.patreon.com/jahed)
+
 Generate Sitemaps as part of your Webpack build.
 
 ## Installation
