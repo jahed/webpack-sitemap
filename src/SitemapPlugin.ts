@@ -2,10 +2,10 @@ import { ok } from 'assert'
 import { resolve as resolveUrl } from 'url'
 import { readFileSync } from 'fs'
 import { join as joinPath, resolve as resolvePath } from 'path'
-import { assign, forEach, map, merge } from 'lodash'
+import { merge } from 'lodash'
 import * as debug from 'debug'
 import { compile as compileTemplate } from 'handlebars'
-import { Compiler, Plugin } from 'webpack'
+import { compilation, Compiler, Plugin } from 'webpack'
 import { IDebugger } from 'debug'
 
 /**
@@ -60,8 +60,8 @@ export interface SitemapDefaults {
 
 export interface SitemapUrlDefaults {
     lastmod: DateString,
-    priority: ChangeFrequency,
-    changefreq: Priority,
+    changefreq: ChangeFrequency,
+    priority: Priority
 }
 
 export interface PluginSitemapIndex { [name: string]: PluginSitemap }
@@ -91,12 +91,12 @@ function getTemplate<T>(filename: string): HandlebarsTemplateDelegate<T> {
 }
 
 class SitemapPlugin implements Plugin {
+    private _log: IDebugger
     private _options: PluginOptions
     private _templates: {
         sitemap: HandlebarsTemplateDelegate<SitemapIndex>,
         urlset: HandlebarsTemplateDelegate<Sitemap>
     }
-    private _log: IDebugger
 
     constructor(userOptions: PluginOptions) {
         const defaultOptions: PluginOptions = {
@@ -126,15 +126,14 @@ class SitemapPlugin implements Plugin {
     }
 
     apply(compiler: Compiler) {
-        compiler.plugin('emit', (compilation, callback) => {
+        compiler.hooks.emit.tapAsync('SitemapPlugin', (compilation: compilation.Compilation, callback: Function) => {
             const sitemapView: SitemapIndex = {
-                sitemaps: map<PluginSitemap, SitemapReference>(
-                    this._options.sitemapindex,
-                    (sitemap, name) => assign(
-                        { loc: resolveUrl(this._options.basename, `./sitemaps/${name}.xml`) },
-                        { lastmod: sitemap.lastmod },
-                        this._options.defaults.sitemap
-                    )
+                sitemaps: Object.keys(this._options.sitemapindex)
+                    .map(name => ({
+                        ...this._options.defaults.sitemap,
+                        loc: resolveUrl(this._options.basename, `./sitemaps/${name}.xml`),
+                        lastmod: this._options.sitemapindex[name].lastmod
+                    })
                 )
             }
 
@@ -146,30 +145,27 @@ class SitemapPlugin implements Plugin {
                 size: () => sitemapSource.length
             }
 
-            forEach<PluginSitemapIndex>(this._options.sitemapindex, (sitemap, name) => {
-                const urlset = map<PluginSitemapUrl, SitemapUrl>(
-                    sitemap.urlset,
-                    (meta: SitemapUrl, location: Location): SitemapUrl => {
-                        return assign(
-                            {
-                                loc: resolveUrl(this._options.basename, location)
-                            },
-                            this._options.defaults.url,
-                            meta
-                        )
+            Object.keys(this._options.sitemapindex)
+                .forEach(name => {
+                    const sitemap = this._options.sitemapindex[name]
+                    const urlset = Object
+                        .keys(sitemap.urlset)
+                        .map((location: Location): SitemapUrl => ({
+                            ...this._options.defaults.url,
+                            ...sitemap.urlset[location],
+                            loc: resolveUrl(this._options.basename, location)
+                        }))
+
+                    const urlsetView = { urlset }
+                    const urlsetSource = this._templates.urlset(urlsetView)
+                    const urlsetPath = joinPath('/sitemaps/', `${name}.xml`)
+
+                    this._log(`Adding: ${urlsetPath}`)
+                    compilation.assets[urlsetPath] = {
+                        source: () => urlsetSource,
+                        size: () => urlsetSource.length
                     }
-                )
-
-                const urlsetView = { urlset }
-                const urlsetSource = this._templates.urlset(urlsetView)
-                const urlsetPath = joinPath('/sitemaps/', `${name}.xml`)
-
-                this._log(`Adding: ${urlsetPath}`)
-                compilation.assets[urlsetPath] = {
-                    source: () => urlsetSource,
-                    size: () => urlsetSource.length
-                }
-            })
+                })
 
             this._log('Done.')
             callback()
