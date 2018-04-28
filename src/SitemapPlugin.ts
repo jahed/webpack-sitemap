@@ -131,8 +131,8 @@ class SitemapPlugin implements Plugin {
                 sitemaps: Object.keys(this._options.sitemapindex)
                     .map(name => ({
                         ...this._options.defaults.sitemap,
-                        loc: resolveUrl(this._options.basename, `./sitemaps/${name}.xml`),
-                        lastmod: this._options.sitemapindex[name].lastmod
+                        ...this._options.sitemapindex[name],
+                        loc: resolveUrl(this._options.basename, `./sitemaps/${name}.xml`)
                     })
                 )
             }
