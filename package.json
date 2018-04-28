@@ -14,7 +14,7 @@
     "build": "rimraf dist && tsc",
     "test": "echo 'No yests yet :('",
     "prepublishOnly": "yarn test && yarn run build",
-    "postpublish": "git push --follow-tags",
+    "postpublish": "git push && git push --tags",
     "docs": "bash -i ./docs.sh"
   },
   "jest": {
