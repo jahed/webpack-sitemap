@@ -5,17 +5,21 @@
   "author": "Jahed Ahmed",
   "license": "MIT",
   "files": [
-    "dist",
+    "lib",
     "templates"
   ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "build": "rimraf dist && tsc",
-    "test": "echo 'No yests yet :('",
-    "prepublishOnly": "yarn test && yarn run build",
-    "postpublish": "git push && git push --tags",
-    "docs": "bash -i ./docs.sh"
+    "lint": "echo 'No linter yet :('",
+    "test": "echo 'No tests yet :('",
+    "build:lib": "rimraf lib && tsc",
+    "build:docs": "rimraf docs && typedoc --theme default --out docs --mode file",
+    "push:git": "git push && git push --tags",
+    "push:docs": "bash -i ./publish-docs.sh",
+    "build": "yarn lint && yarn test && yarn build:lib && yarn build:docs",
+    "deploy": "yarn build && yarn publish && yarn push:git && yarn push:docs",
+    "deps": "yarn upgrade-interactive --latest && yarn upgrade && git add yarn.lock '*package.json' && git commit -m 'build(deps): upgrade dependencies'"
   },
   "jest": {
     "transform": {
@@ -31,12 +35,10 @@
     ]
   },
   "dependencies": {
-    "debug": "3.1.0",
     "handlebars": "4.0.11",
     "lodash": "4.17.10"
   },
   "devDependencies": {
-    "@types/debug": "0.0.30",
     "@types/handlebars": "4.0.37",
     "@types/jest": "22.2.3",
     "@types/lodash": "4.14.108",

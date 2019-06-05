@@ -1,12 +1,19 @@
 # webpack-sitemap
 
+[![Travis](https://img.shields.io/travis/jahed/webpack-sitemap.svg)](https://travis-ci.org/jahed/webpack-sitemap)
+[![npm](https://img.shields.io/npm/v/@jahed/webpack-sitemap.svg)](https://www.npmjs.com/package/@jahed/webpack-sitemap)
 [![Patreon](https://img.shields.io/badge/patreon-donate-f96854.svg)](https://www.patreon.com/jahed)
+[![Liberapay](https://img.shields.io/badge/liberapay-donate-d9b113.svg)](https://liberapay.com/jahed)
 
 Generate Sitemaps as part of your Webpack build.
 
 ## Installation
 
 ```bash
+# Yarn
+yarn add --dev @jahed/webpack-sitemap
+
+# NPM
 npm install --save-dev @jahed/webpack-sitemap
 ```
 
